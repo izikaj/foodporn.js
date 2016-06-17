@@ -68,12 +68,13 @@
     if ul
       day.appendChild ul
     day.appendChild total
-    if leastcost == 0
-      day.setAttribute 'class', 'day warning'
-    else if leastcost < 0
+    if leastcost < 0
       day.setAttribute 'class', 'day error'
     else
-      day.setAttribute 'class', 'day acceptable'
+      if leastcost < 5
+        day.setAttribute 'class', 'day warning'
+      else
+        day.setAttribute 'class', 'day acceptable'
       notify = document.createElement('i')
       notify.appendChild document.createTextNode('(' + leastcost.toFixed(2) + ')')
       total_cost.appendChild notify

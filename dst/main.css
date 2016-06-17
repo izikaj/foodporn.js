@@ -1,27 +1,48 @@
 .foodporn_root {
   position: fixed;
-  top: 0px;
-  right: 0;
+  top: 5px;
+  right: 5px;
   width: 300px;
-  opacity: 0.8; }
-  .foodporn_root div {
-    background: #fff;
+  opacity: 0.8;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: #867649 0px 2px 5px; }
+  .foodporn_root > div {
     padding: 0.5em; }
-    .foodporn_root div.warning {
-      background: #fcffdb; }
-    .foodporn_root div.error {
-      background: #f99f9f; }
-    .foodporn_root div.acceptable {
-      background: #fff; }
-    .foodporn_root div ul {
+    .foodporn_root > div:not(:last-child):after {
+      content: '*****';
+      display: inline-block;
+      text-align: center;
+      width: 100%;
+      position: relative;
+      top: 20px;
+      line-height: 10px;
+      font-size: 16px;
+      letter-spacing: 1em;
+      color: #e3ef90; }
+    .foodporn_root > div.warning {
+      background: #f4ffc2; }
+    .foodporn_root > div.error {
+      background: #ff8888; }
+      .foodporn_root > div.error > i {
+        font-weight: bold; }
+      .foodporn_root > div.error strong {
+        color: #c30000; }
+    .foodporn_root > div.acceptable {
+      background: #dbfdff; }
+    .foodporn_root > div strong {
+      text-align: center;
+      display: block; }
+    .foodporn_root > div ul {
       margin: 5px 0px;
       padding: 0 0 0 26px; }
-    .foodporn_root div i {
+    .foodporn_root > div i {
       display: block;
       margin: 0 0 8px 20%; }
-      .foodporn_root div i b {
+      .foodporn_root > div i b {
         font-size: 110%; }
-        .foodporn_root div i b i {
+        .foodporn_root > div i b i {
+          display: inline-block;
           font-size: 80%;
           color: #090;
           margin-left: 10px; }
