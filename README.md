@@ -10,3 +10,9 @@ my implementation of foodporn.js
   document.body.appendChild(s);
 })(document);
 ```
+### TODO
+- Don't use inline CSS
+- Use Gulp to compile Sass & CoffeeScript
+- Use JS templates
+- Make save|send button (pastebin api?)
+- Make code cleaner
