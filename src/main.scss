@@ -1,0 +1,41 @@
+.foodporn_root {
+  position: fixed;
+  top: 0px;
+  right: 0;
+  width: 300px;
+  opacity: 0.8;
+  div {
+    background: #fff; padding: 0.5em;
+    &.warning {
+      background: #fcffdb;
+    }
+    &.error {
+      background: #f99f9f;
+    }
+    &.acceptable {
+      background: #fff;
+    }
+
+    strong {}
+
+    ul {
+      margin: 5px 0px;
+      padding: 0 0 0 26px;
+    }
+
+    i {
+      display: block;
+      margin: 0 0 8px 20%;
+
+      b {
+        font-size: 110%;
+
+        i {
+          font-size: 80%;
+          color: #090;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+}
