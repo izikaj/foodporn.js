@@ -2,41 +2,42 @@
   position: fixed;
   top: 5px;
   right: 5px;
-  width: 300px;
+  width: 350px;
   opacity: 0.8;
   border-radius: 4px;
   overflow: hidden;
   box-shadow: #867649 0px 2px 5px;
   & > div {
-    padding: 0.5em;
+    padding: 10px 0.5em;
 
     &:not(:last-child) {
       &:after {
-        content: '*****';
-        display: inline-block;
+        content: '';
+        display: block;
         text-align: center;
-        width: 100%;
         position: relative;
-        top: 20px;
-        line-height: 10px;
-        font-size: 16px;
-        letter-spacing: 1em;
-        color: #e3ef90;
+        top: 11px;
+        background: #524367;
+        width: 70%;
+        height: 2px;
+        margin: 0 auto;
+      }
+    }
+
+    &.error {
+      background: #ffcfcf;
+
+      & > i {
+        font-weight: bold;
+      }
+
+      strong {
+        color: #c30000;
       }
     }
 
     &.warning {
-      background: #f4ffc2;
-    }
-
-    &.error {
-      background: #ff8888;
-      > i {
-        font-weight: bold;
-      }
-      strong {
-        color: #c30000;
-      }
+      background: #f3f9d6;
     }
 
     &.acceptable {
@@ -51,11 +52,16 @@
     ul {
       margin: 5px 0px;
       padding: 0 0 0 26px;
+
+      li {
+        font-size: 95%;
+        list-style-type: decimal-leading-zero;
+      }
     }
 
     i {
       display: block;
-      margin: 0 0 8px 20%;
+      margin: 0 0 0 20%;
 
       b {
         font-size: 110%;
