@@ -16,3 +16,4 @@ my implementation of foodporn.js
 - Use JS templates
 - Make save|send button (pastebin api?)
 - Make code cleaner
+- Make build&publish chrome extention script
