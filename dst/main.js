@@ -1,5 +1,17 @@
 (function(w) {
-  var bindAll, buildDay, buildScaffold, getDaily, getPrice, graph, loadCss, log, root_el;
+  var $, $$, bindAll, buildDay, buildScaffold, getDaily, getPrice, graph, loadCss, loadScripts, root_el;
+  $$ = function(selector, root) {
+    if (root == null) {
+      root = void 0;
+    }
+    return Array.prototype.slice.call((root || document).querySelectorAll(selector));
+  };
+  $ = function(selector, root) {
+    if (root == null) {
+      root = void 0;
+    }
+    return (root || document).querySelector(selector);
+  };
   getPrice = function(element) {
     var _arr, r, res, title;
     r = /\d+((\.|\,)\d+)?/g;
@@ -9,11 +21,10 @@
     return parseFloat(_arr[_arr.length - 1] || 0);
   };
   getDaily = function(group) {
-    var daily_cost, items, title, title_c;
+    var daily_cost, items, ref, title;
     daily_cost = 0;
-    title_c = group.querySelector('[role="heading"]');
-    title = title_c ? title_c.textContent : '';
-    items = Array.prototype.slice.call(group.querySelectorAll('[role="checkbox"][aria-checked="true"]')).map(function(item) {
+    title = (ref = $('[role="heading"]', group)) != null ? ref.textContent : void 0;
+    items = $$('[role="checkbox"][aria-checked="true"]', group).map(function(item) {
       daily_cost += getPrice(item);
       return item.attributes['aria-label'].value;
     });
@@ -23,19 +34,14 @@
       total: daily_cost
     };
   };
-  log = function() {
-    console.log(Array.prototype.slice.call(document.querySelectorAll('[role="checkbox"]')).map(function(e) {
-      return getDaily(e);
-    }).filter(function(e) {
-      return e.total > 0;
-    }).map(function(day) {
-      return [day.title, day.items, ['Total:', day.total].join(' ')].join('\n');
-    }).join('*****\n'));
-  };
   bindAll = function(func) {
-    Array.prototype.slice.call(document.querySelectorAll('[role="checkbox"]')).map(function(checkbox) {
-      checkbox.addEventListener('click', (function() {
-        setTimeout(func, 200);
+    $$('[role="checkbox"]').map(function(checkbox) {
+      checkbox.addEventListener('click', (function(e) {
+        setTimeout(((function(_this) {
+          return function() {
+            return func.call(_this);
+          };
+        })(this)), 200);
       }), false);
     });
   };
@@ -79,18 +85,60 @@
     }
     root.appendChild(day);
   };
-  graph = function(root) {
-    var res;
-    Array.prototype.slice.call(root.childNodes).forEach(function(element, index) {
+  graph = function(root, e) {
+    var leastcost, res;
+    $$('div', root).forEach(function(element, index) {
       element.remove();
     });
-    res = Array.prototype.slice.call(document.querySelectorAll('[role="listitem"]')).map(function(e) {
+    leastcost = 50 - getDaily(this.closest('[role="listitem"]')).total;
+    $$('[role="checkbox"][aria-checked="false"]', this.closest('[role="listitem"]')).forEach(function(item) {
+      var p;
+      p = getPrice(item);
+      if (p > leastcost) {
+        return item.closest('label').setAttribute('style', 'opacity: 0.4;');
+      } else {
+        return item.closest('label').setAttribute('style', '');
+      }
+    });
+    res = $$('[role="listitem"]').map(function(e) {
       return getDaily(e);
     }).filter(function(e) {
       return e.total > 0;
     }).forEach(function(day, index) {
       buildDay(root, day);
     });
+  };
+  loadScripts = function(scripts, complete) {
+    var loadScript;
+    loadScript = function(src) {
+      var e, error, next, xmlhttp;
+      xmlhttp = void 0;
+      next = void 0;
+      if (window.XMLHttpRequest) {
+        xmlhttp = new XMLHttpRequest;
+      } else {
+        try {
+          xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+        } catch (error) {
+          e = error;
+          return;
+        }
+      }
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+          w["eval"](xmlhttp.responseText);
+          next = scripts.shift();
+          if (next) {
+            loadScript(next);
+          } else if (typeof complete === 'function') {
+            complete();
+          }
+        }
+      };
+      xmlhttp.open('GET', src, true);
+      xmlhttp.send();
+    };
+    loadScript(scripts.shift());
   };
   loadCss = function() {
     var style;
@@ -109,8 +157,10 @@
   };
   loadCss();
   root_el = buildScaffold();
-  bindAll(function() {
-    graph(root_el);
+  loadScripts(['https://izikaj.github.io/foodporn.js/vendor/mustache.min.js'], function() {
+    return bindAll(function(e) {
+      graph.call(this, root_el);
+    });
   });
   return this;
 })(this);

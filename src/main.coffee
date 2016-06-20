@@ -1,4 +1,9 @@
 ((w) ->
+  $$ = (selector, root = undefined)->
+    Array::slice.call((root || document).querySelectorAll(selector))
+  $ = (selector, root = undefined)->
+    (root || document).querySelector(selector)
+
   getPrice = (element) ->
     r = /\d+((\.|\,)\d+)?/g
     title = element.attributes['aria-label'].value
@@ -8,9 +13,8 @@
 
   getDaily = (group) ->
     daily_cost = 0
-    title_c = group.querySelector('[role="heading"]')
-    title = if title_c then title_c.textContent else ''
-    items = Array::slice.call(group.querySelectorAll('[role="checkbox"][aria-checked="true"]')).map((item) ->
+    title = $('[role="heading"]', group)?.textContent
+    items = $$('[role="checkbox"][aria-checked="true"]', group).map((item) ->
       daily_cost += getPrice(item)
       item.attributes['aria-label'].value
     )
@@ -20,27 +24,11 @@
       total: daily_cost
     }
 
-  log = ->
-    console.log Array::slice.call(document.querySelectorAll('[role="checkbox"]')).map((e) ->
-      getDaily e
-    ).filter((e) ->
-      e.total > 0
-    ).map((day) ->
-      [
-        day.title
-        day.items
-        [
-          'Total:'
-          day.total
-        ].join(' ')
-      ].join '\n'
-    ).join('*****\n')
-    return
-
   bindAll = (func) ->
-    Array::slice.call(document.querySelectorAll('[role="checkbox"]')).map (checkbox) ->
-      checkbox.addEventListener 'click', (->
-        setTimeout func, 200
+    $$('[role="checkbox"]').map (checkbox) ->
+      checkbox.addEventListener 'click', ((e)->
+        setTimeout (=>
+          func.call(this)), 200
         return
       ), false
       return
@@ -81,11 +69,20 @@
     root.appendChild day
     return
 
-  graph = (root) ->
-    Array::slice.call(root.childNodes).forEach (element, index) ->
+  graph = (root, e) ->
+    $$('div', root).forEach (element, index) ->
       element.remove()
       return
-    res = Array::slice.call(document.querySelectorAll('[role="listitem"]')).map((e) ->
+
+    leastcost = 50 - getDaily(this.closest('[role="listitem"]')).total
+    $$('[role="checkbox"][aria-checked="false"]', this.closest('[role="listitem"]')).forEach (item)->
+      p = getPrice(item)
+      if (p > leastcost)
+        item.closest('label').setAttribute('style', 'opacity: 0.4;')
+      else
+        item.closest('label').setAttribute('style', '')
+
+    res = $$('[role="listitem"]').map((e) ->
       getDaily e
     ).filter((e) ->
       e.total > 0
@@ -93,6 +90,36 @@
       buildDay root, day
       return
     )
+    return
+
+  loadScripts = (scripts, complete) ->
+
+    loadScript = (src) ->
+      xmlhttp = undefined
+      next = undefined
+      if window.XMLHttpRequest
+        xmlhttp = new XMLHttpRequest
+      else
+        try
+          xmlhttp = new ActiveXObject('Microsoft.XMLHTTP')
+        catch e
+          return
+
+      xmlhttp.onreadystatechange = ->
+        if xmlhttp.readyState == 4 and xmlhttp.status == 200
+          w.eval(xmlhttp.responseText)
+          next = scripts.shift()
+          if next
+            loadScript next
+          else if typeof complete == 'function'
+            complete()
+        return
+
+      xmlhttp.open 'GET', src, true
+      xmlhttp.send()
+      return
+
+    loadScript scripts.shift()
     return
 
   loadCss = ->
@@ -110,8 +137,11 @@
 
   loadCss()
   root_el = buildScaffold()
-  bindAll ->
-    graph root_el
-    return
+
+  loadScripts ['https://izikaj.github.io/foodporn.js/vendor/mustache.min.js'], ->
+    bindAll (e)->
+      graph.call(this, root_el)
+      return
+
   this
 )(this)
