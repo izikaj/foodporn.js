@@ -13,6 +13,7 @@ my implementation of foodporn.js
 ### TODO
 - ~~Don't use inline CSS~~
 - ~~Use Gulp to compile Sass & CoffeeScript~~
+- ~~Highlight available items~~
 - Use JS templates
 - Make save|send button (pastebin api?)
 - Make code cleaner
